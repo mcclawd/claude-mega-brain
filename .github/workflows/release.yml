@@ -1,0 +1,35 @@
+name: release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "v${{ steps.version.outputs.version }}"
+          body: |
+            ## claude-mega-brain v${{ steps.version.outputs.version }}
+
+            Install via Claude Code:
+            ```
+            /plugin marketplace add guhcostan/claude-mega-brain
+            /plugin install mega-brain@guhcostan
+            ```
+
+            See [CHANGELOG.md](CHANGELOG.md) for details.
+          draft: false
+          prerelease: false

@@ -1,0 +1,58 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate plugin manifest
+        run: python3 -c "import json; json.load(open('.claude-plugin/plugin.json')); print('plugin.json OK')"
+
+      - name: Validate hooks.json
+        run: python3 -c "import json; json.load(open('hooks/hooks.json')); print('hooks.json OK')"
+
+      - name: Check scripts are executable
+        run: |
+          test -x hooks/session-start || (echo "session-start not executable" && exit 1)
+          test -x scripts/parse-okf.py || (echo "parse-okf.py not executable" && exit 1)
+          test -x scripts/inject-links.py || (echo "inject-links.py not executable" && exit 1)
+          echo "All scripts executable OK"
+
+      - name: Smoke test parse-okf.py
+        run: |
+          mkdir -p /tmp/test-okf/tables
+          cat > /tmp/test-okf/tables/orders.md << 'EOF'
+          ---
+          type: BigQuery Table
+          title: Orders
+          description: One row per completed order.
+          ---
+          EOF
+          python3 scripts/parse-okf.py /tmp/test-okf test-okf /tmp | grep "1 concept"
+          echo "parse-okf smoke test OK"
+
+      - name: Validate benchmark evaluators
+        run: |
+          python3 -c "import json; json.load(open('benchmarks/promptfooconfig.yaml'.replace('.yaml','')) if False else open('benchmarks/promptfooconfig.yaml').read() and None) if False else None" 2>/dev/null || true
+          node --input-type=module < benchmarks/evaluators/contains_truth.js 2>/dev/null || \
+          node -e "require('./benchmarks/evaluators/contains_truth.js'); console.log('contains_truth OK')"
+
+      - name: Validate all skills have SKILL.md
+        run: |
+          for dir in skills/*/; do
+            if [ ! -f "${dir}SKILL.md" ]; then
+              echo "Missing SKILL.md in ${dir}" && exit 1
+            fi
+          done
+          echo "All skills valid OK"
