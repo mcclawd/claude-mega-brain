@@ -24,20 +24,13 @@ Real agentic sessions (`claude -p`).
 /plugin install mega-brain@guhcostan
 ```
 
-Then create a knowledge base in any project:
+Then in any project:
 
-```bash
-mkdir okf/
-cat > okf/tables/orders.md << 'EOF'
----
-type: BigQuery Table
-title: Orders
-description: One row per completed customer order.
----
-EOF
+```
+/mega-brain:init
 ```
 
-Start a new Claude Code session — the knowledge base is loaded automatically.
+Start a new session — the knowledge base loads automatically.
 
 ---
 
