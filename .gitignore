@@ -14,6 +14,9 @@ assets/logo-mix-*.png
 # promptfoo raw output
 benchmarks/results/*.json
 
+# playwright mcp artifacts
+.playwright-mcp/
+
 # intermediate prompt files
 benchmarks/prompts/knowledge-query.txt
 benchmarks/prompts/knowledge-query-with-context.txt
