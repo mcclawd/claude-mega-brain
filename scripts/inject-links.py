@@ -10,7 +10,7 @@ import json
 
 SILENT = '{"continue": true}'
 
-OKF_CANDIDATES = ('.lore', '.okf', 'okf', 'knowledge', '.second-brain', 'brain')
+OKF_CANDIDATES = ('okf', '.okf', 'knowledge', 'brain', '.second-brain')
 
 
 def parse_frontmatter(content):

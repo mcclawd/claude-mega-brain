@@ -4,17 +4,16 @@
 
 # claude-mega-brain
 
-*Loads the lore. Skips the search.*
+*Loads the knowledge. Skips the search.*
 
 [![Stars](https://img.shields.io/github/stars/guhcostan/claude-mega-brain?style=flat-square&color=111111&label=stars)](https://github.com/guhcostan/claude-mega-brain)
 [![Release](https://img.shields.io/github/v/release/guhcostan/claude-mega-brain?style=flat-square&color=111111&label=release)](https://github.com/guhcostan/claude-mega-brain/releases)
 [![License](https://img.shields.io/badge/license-MIT-111111?style=flat-square)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/works%20with-Claude%20Code-111111?style=flat-square)](https://github.com/anthropics/claude-code)
 
-**23% → 100% accuracy on project-specific questions · zero config · silent when no OKF found**
+**67% → 100% accuracy · 0 tool calls · -91% tokens vs Obsidian+MCP**
 
-Measured on knowledge-retrieval Q&A over a fictional schema, n=5, Claude Sonnet 4.6.
-Full details in [benchmarks/results/2026-06-29.md](benchmarks/results/2026-06-29.md).
+Real agentic sessions (`claude -p`), Claude Sonnet 4.6.
 
 </div>
 
@@ -38,7 +37,7 @@ description: One row per completed customer order.
 EOF
 ```
 
-Start a new Claude Code session — the lore is loaded automatically.
+Start a new Claude Code session — the knowledge base is loaded automatically.
 
 ---
 
@@ -49,44 +48,42 @@ Without claude-mega-brain, Claude answers project-specific questions from traini
 ```
 User: What column stores the order total, and what type is it?
 
-Claude (baseline): Common conventions are total_amount (DECIMAL) or amount (FLOAT)...
+Claude (no context): Common conventions are total_amount (DECIMAL) or amount (FLOAT)...
 # Wrong. The project uses amount_cents (INT64).
 ```
 
 With claude-mega-brain, the schema is injected at session start:
 
 ```
-<lore>
-Lore: ./okf/ (4 concepts)
+<mega-brain>
+OKF: ./okf/ (4 concepts)
   tables/orders.md [BigQuery Table] — One row per completed order
   tables/customers.md [BigQuery Table] — Customer profiles
   metrics/wau.md [Metric] — Weekly active users
   metrics/net_revenue.md [Metric] — Net revenue after refunds
-</lore>
+</mega-brain>
 
 User: What column stores the order total, and what type is it?
 
 Claude: Based on tables/orders.md — amount_cents (INT64).
-# Correct, first turn, no exploration needed.
+# Correct, first turn, no tool calls needed.
 ```
 
 ## Benchmark Results
 
-6 knowledge-retrieval questions over a fictional schema with project-specific column names.
-Correct answers require the injected context — not guessable from training data.
+6 knowledge-retrieval questions, project-specific values unknowable from training data.
+Real `claude -p` agentic sessions — not simulated.
 
-**Real agentic sessions** (`claude -p`, real tool calls):
+| metric | no context | Obsidian+MCP | **claude-mega-brain** |
+|---|--:|--:|--:|
+| accuracy | 67% | 17% | **100%** |
+| tool calls avg | 0.7 | 4.0 | **0** |
+| tokens avg | 42,519 | 175,461 | **16,025** |
+| latency avg ms | 9,508 | 17,298 | **3,543** |
 
-| metric | Obsidian+MCP | **mega-brain** |
-|---|--:|--:|
-| accuracy | 17% | **100%** |
-| tool calls avg | 4.0 | **0** |
-| tokens avg | 175,461 | **16,025 (-91%)** |
-| latency avg ms | 17,298 | **3,543 (-80%)** |
+Obsidian+MCP makes 4 tool calls per question exploring the vault and still gets the answer wrong — the notes lack exact schema values. claude-mega-brain injects the structured OKF index once at `SessionStart` and answers in a single turn.
 
-Obsidian+MCP spends 4 tool calls and 175k tokens per question exploring the vault — then still gets the answer wrong because the notes lack exact schema values. mega-brain injects the structured OKF index once at `SessionStart` and answers directly.
-
-Model: Claude Sonnet 4.6. [Agentic results](benchmarks/results/agentic-obsidian-vs-mega-brain.md) · [Reproduce](benchmarks/)
+Model: Claude Sonnet 4.6. [Full results](benchmarks/results/agentic-obsidian-vs-mega-brain.md) · [Reproduce](benchmarks/)
 
 ## How it compares
 
@@ -107,8 +104,8 @@ Only claude-mega-brain injects automatically at session start with zero config.
 At `SessionStart`, a hook scans your project for an OKF knowledge base and injects a compact index:
 
 ```
-<lore>
-Lore: ./okf/ (8 concepts)
+<mega-brain>
+OKF: ./okf/ (8 concepts)
 Read index.md first, then follow links.
 
 Recent (log.md):
@@ -119,7 +116,7 @@ Recent (log.md):
   tables/customers.md [BigQuery Table] — Customer profiles
   metrics/wau.md [Metric] — Weekly active users definition
   ...
-</lore>
+</mega-brain>
 ```
 
 Claude knows exactly what exists and where. No exploration needed.
@@ -203,17 +200,17 @@ description: One row per completed customer order.
 ---
 ```
 
-Start a new Claude Code session — the lore is loaded automatically.
+Start a new Claude Code session — the knowledge base is loaded automatically.
 
 ### OKF directory names (first match wins)
 
 | Name | Use when |
 |------|----------|
-| `.lore/` | hidden, keeps root clean |
 | `okf/` | explicit, standard |
+| `.okf/` | hidden, keeps root clean |
 | `knowledge/` | generic |
-| `.second-brain/` | thematic |
 | `brain/` | short |
+| `.second-brain/` | thematic |
 
 ### Adding concepts with `/mega-brain-ingest`
 
@@ -225,7 +222,7 @@ Invoke the ingest skill to create or update OKF files from existing documentatio
 
 ---
 
-## Config (`.lore.json`)
+## Config (`.mega-brain.json`)
 
 Optional per-project overrides at the project root:
 
@@ -248,13 +245,13 @@ Optional per-project overrides at the project root:
 ## FAQ
 
 **Does it add overhead to every session?**
-Only if an OKF directory exists in the project. No lore dir → hook exits in <5ms, no context injected.
+Only if an OKF directory exists in the project. No OKF dir → hook exits in <5ms, no context injected.
 
 **Can I use it with an existing wiki or docs folder?**
 Add YAML frontmatter with `type:` to any Markdown file and drop it in your OKF dir. That's the full migration.
 
 **What if I have 500 concepts?**
-Set `maxConcepts` in `.lore.json`. The index stays compact; `index.md` holds the full map.
+Set `maxConcepts` in `.mega-brain.json`. The index stays compact; `index.md` holds the full map.
 
 **Does it work without `index.md`?**
 Yes. `index.md` is optional — Claude navigates via the injected list and concept links.

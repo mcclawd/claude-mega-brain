@@ -1,11 +1,11 @@
 ---
-name: lore-ingest
-description: Create or update OKF concept files from existing documentation. Use when the user wants to add a new concept to the project's lore, convert existing docs into OKF format, or update stale OKF entries. Produces valid OKF markdown files with YAML frontmatter.
+name: mega-brain-ingest
+description: Create or update OKF concept files from existing documentation. Use when the user wants to add a new concept to the project's knowledge base, convert existing docs into OKF format, or update stale OKF entries. Produces valid OKF markdown files with YAML frontmatter.
 ---
 
-# lore-ingest — OKF Concept Writer
+# mega-brain-ingest — OKF Concept Writer
 
-Turns raw documentation (text, schemas, API docs, runbooks, data descriptions) into OKF-formatted `.md` files ready to be committed to the lore directory.
+Turns raw documentation (text, schemas, API docs, runbooks, data descriptions) into OKF-formatted `.md` files ready to be committed to the okf directory.
 
 ## What to produce
 

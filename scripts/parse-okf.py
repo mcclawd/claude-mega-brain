@@ -45,7 +45,7 @@ def last_log_entries(log_path, n=3):
 
 def load_config(project_root):
     try:
-        with open(os.path.join(project_root, '.lore.json')) as f:
+        with open(os.path.join(project_root, '.mega-brain.json')) as f:
             return json.load(f)
     except Exception:
         return {}

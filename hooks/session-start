@@ -7,11 +7,11 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 PROJECT_ROOT="${PWD}"
 
-# Check .lore.json for a custom dir override
+# Check .mega-brain.json for a custom dir override
 CUSTOM_DIR=$(python3 -c "
 import json, sys
 try:
-    c = json.load(open('${PROJECT_ROOT}/.lore.json'))
+    c = json.load(open('${PROJECT_ROOT}/.mega-brain.json'))
     print(c.get('dir', ''))
 except Exception:
     print('')
@@ -24,7 +24,7 @@ if [ -n "${CUSTOM_DIR}" ] && [ -d "${PROJECT_ROOT}/${CUSTOM_DIR}" ]; then
     OKF_DIR="${PROJECT_ROOT}/${CUSTOM_DIR}"
     OKF_NAME="${CUSTOM_DIR}"
 else
-    for candidate in ".lore" ".okf" "okf" "knowledge" ".second-brain" "brain"; do
+    for candidate in "okf" ".okf" "knowledge" "brain" ".second-brain"; do
         if [ -d "${PROJECT_ROOT}/${candidate}" ]; then
             OKF_DIR="${PROJECT_ROOT}/${candidate}"
             OKF_NAME="${candidate}"
@@ -55,7 +55,7 @@ escape_for_json() {
     printf '%s' "$s"
 }
 
-PAYLOAD=$(printf '<lore>\n%s\n</lore>' "${CONTEXT}")
+PAYLOAD=$(printf '<mega-brain>\n%s\n</mega-brain>' "${CONTEXT}")
 ESCAPED=$(escape_for_json "${PAYLOAD}")
 
 if [ -n "${CURSOR_PLUGIN_ROOT:-}" ]; then
