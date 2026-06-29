@@ -5,7 +5,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-PROJECT_ROOT="${PWD}"
+PROJECT_ROOT="${CLAUDE_PROJECT_DIR:-${PWD}}"
 
 # Check .mega-brain.json for a custom dir override
 CUSTOM_DIR=$(python3 -c "

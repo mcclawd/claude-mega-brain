@@ -21,7 +21,7 @@ Real agentic sessions (`claude -p`).
 
 ```
 /plugin marketplace add guhcostan/claude-mega-brain
-/plugin install claude-mega-brain@guhcostan
+/plugin install mega-brain@guhcostan
 ```
 
 Then create a knowledge base in any project:
@@ -170,7 +170,7 @@ Types are freeform — add your own.
 
 ```
 /plugin marketplace add guhcostan/claude-mega-brain
-/plugin install claude-mega-brain@guhcostan
+/plugin install mega-brain@guhcostan
 ```
 
 ### Local (development)

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "mega-brain",
+  "displayName": "Mega Brain",
+  "version": "0.2.0",
+  "description": "OKF-powered knowledge context for Claude Code — injects your project knowledge base at every session",
+  "author": {
+    "name": "Gustavo Costa",
+    "url": "https://github.com/guhcostan"
+  },
+  "homepage": "https://github.com/guhcostan/claude-mega-brain",
+  "repository": "https://github.com/guhcostan/claude-mega-brain",
+  "license": "MIT",
+  "keywords": ["okf", "knowledge", "context", "second-brain", "mega-brain"],
+  "skills": "./skills",
+  "hooks": "./hooks/hooks.json"
+}
