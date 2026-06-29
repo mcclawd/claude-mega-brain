@@ -1,6 +1,6 @@
 # claude-mega-brain
 
-![claude-mega-brain logo](assets/logo.png)
+<img src="assets/logo.png" width="180" alt="claude-mega-brain logo" />
 
 *Loads the lore. Skips the search.*
 
