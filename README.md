@@ -1,6 +1,8 @@
-# claude-mega-brain
+<div align="center">
 
-<img src="assets/logo.png" width="180" alt="claude-mega-brain logo" />
+<img src="assets/logo.png" width="280" alt="claude-mega-brain logo" />
+
+# claude-mega-brain
 
 *Loads the lore. Skips the search.*
 
@@ -13,6 +15,8 @@
 
 Measured on knowledge-retrieval Q&A over a fictional schema, n=5, Claude Sonnet 4.6.
 Full details in [benchmarks/results/2026-06-29.md](benchmarks/results/2026-06-29.md).
+
+</div>
 
 ## Install
 
