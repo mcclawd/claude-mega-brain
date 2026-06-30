@@ -227,6 +227,7 @@ Optional per-project overrides:
 
 | Field | Default | Description |
 |-------|---------|-------------|
+| `dir` | *(none)* | Limit scanning to this subdirectory (relative to project root). When unset, the entire project is scanned. |
 | `maxConcepts` | `60` | Max concepts in injected index |
 | `priorityTypes` | `[]` | Types shown at top of index |
 | `exclude` | `[]` | Additional dirs to skip when scanning |

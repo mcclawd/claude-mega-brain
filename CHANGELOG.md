@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.2.1 — 2026-06-30
+
+### Added
+- `scripts/okf_utils.py` — shared config, frontmatter, and path helpers
+- `tests/test_okf.py` — unit tests for parse-okf, inject-links, and config
+
+### Fixed
+- `.mega-brain.json` `dir` field now limits the OKF scan root (was documented but not implemented)
+- `inject-links.py` uses `CLAUDE_PROJECT_DIR` for relative paths (was `os.getcwd()`)
+- Skills (`init`, `migrate`, `ingest`) aligned with flexible folder model — no hard `okf/` requirement
+- `package.json` and plugin manifest versions aligned (`0.2.1`)
+
 ## v0.2.0 — 2026-06-29
 
 ### Added

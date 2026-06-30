@@ -1,6 +1,8 @@
 .cache/
 .vector-index/
 node_modules/
+__pycache__/
+*.pyc
 
 # reference images used during logo creation
 assets/clawd-ref.jpg

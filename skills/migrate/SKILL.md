@@ -1,6 +1,6 @@
 ---
 name: migrate
-description: Scan the project and migrate existing documentation into OKF format. Use when the user wants to populate the okf/ directory from existing docs, README, schemas, API specs, runbooks, or any structured project knowledge. Trigger on "migrate to okf", "populate the knowledge base", "scan my docs", "convert docs to okf", "importar documentação", "migrar para okf", "popular o knowledge base", "lê meus docs e cria o okf", "generate okf from existing docs", or when the user points at a docs folder and asks to "put it in the knowledge base". Always check that okf/ exists first; if not, run /mega-brain:init before migrating.
+description: Scan the project and migrate existing documentation into OKF format. Use when the user wants to populate the knowledge base from existing docs, README, schemas, API specs, runbooks, or any structured project knowledge. Trigger on "migrate to okf", "populate the knowledge base", "scan my docs", "convert docs to okf", "importar documentação", "migrar para okf", "popular o knowledge base", "lê meus docs e cria o okf", "generate okf from existing docs", or when the user points at a docs folder and asks to "put it in the knowledge base". If no OKF files exist yet, run /mega-brain:init before migrating.
 ---
 
 # migrate — Migrate Existing Docs to OKF
@@ -9,7 +9,9 @@ Reads existing project documentation and generates OKF concept files so claude-m
 
 ## Before starting
 
-Check if an OKF directory exists (`okf/`, `.okf/`, `knowledge/`, `brain/`). If none found, run `/mega-brain:init` first, then proceed.
+Look for existing OKF files: any `.md` with `type:` frontmatter, or `index.md` / `log.md` anywhere in the project. If none exist, run `/mega-brain:init` first.
+
+If `.mega-brain.json` defines `dir`, place new files under that directory. Otherwise, put files wherever fits the project (`docs/`, project root, etc.) — no dedicated folder is required.
 
 ## Process
 
@@ -70,14 +72,15 @@ timestamp: <today ISO date>
 - Add wikilinks `[Name](relative-path.md)` when concepts reference each other
 - Place files in `tables/`, `apis/`, `metrics/`, `services/`, `runbooks/` as appropriate
 
-### 4. Update `okf/index.md`
+### 4. Update `index.md`
 
-Add one line per new concept under the relevant section:
+Add one line per new concept under the relevant section in the project's existing `index.md` (create one via `/mega-brain:init` if missing):
+
 ```markdown
 - [Title](subdir/file.md) — one-sentence description
 ```
 
-### 5. Append to `okf/log.md`
+### 5. Append to `log.md`
 
 ```
 <today ISO date> — migrated <N> concepts from <source list>

@@ -47,10 +47,10 @@ type: Log
 
 ## Steps
 
-1. Check if OKF files already exist — look for any `.md` with `type:` frontmatter. If found, tell the user and stop.
+1. Check if OKF files already exist — look for any `.md` with `type:` frontmatter, or an existing `index.md` / `log.md`. If found, tell the user and stop.
 2. Detect project type (`package.json`, `pyproject.toml`, `go.mod`, etc.) to personalize the index template.
-3. Ask the user where they want the files — suggest project root or `docs/` as default.
-4. Write `index.md` and `log.md`.
+3. Ask the user where they want the files — suggest project root or `docs/` as default. If `.mega-brain.json` has a `dir` field, use that subdirectory instead.
+4. Write `index.md` and `log.md` in the chosen location.
 5. Tell the user:
    - What was created and where
    - **Start a new Claude Code session** for context injection to activate
