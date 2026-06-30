@@ -1,27 +1,11 @@
 #!/usr/bin/env python3
-"""Scan project root for OKF concepts (any .md with type: frontmatter) and print a compact index."""
-import sys
+"""Scan project for OKF concepts (any .md with type: frontmatter) and print a compact index."""
 import os
 import re
-import json
+import sys
 
-SKIP_DIRS = {
-    'node_modules', '.git', '.cache', 'vendor', 'dist', 'build',
-    '__pycache__', '.venv', 'venv', '.tox', 'coverage', '.nyc_output',
-    'target', '.gradle', 'Pods', '.dart_tool', '.flutter-plugins',
-}
-
-
-def parse_frontmatter(content):
-    m = re.match(r'^---\s*\n(.*?)\n---\s*\n?', content, re.DOTALL)
-    if not m:
-        return {}, 0
-    fm = {}
-    for line in m.group(1).splitlines():
-        if ':' in line:
-            k, _, v = line.partition(':')
-            fm[k.strip()] = v.strip().strip('"\'')
-    return fm, m.end()
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from okf_utils import SKIP_DIRS, get_scan_root, is_okf_concept, load_config, parse_frontmatter
 
 
 def body_excerpt(content, fm_end):
@@ -43,24 +27,17 @@ def last_log_entries(log_path, n=3):
         body = content[m.end():] if m else content
         lines = [l.strip() for l in body.splitlines() if l.strip() and not l.startswith('#')]
         return lines[-n:]
-    except Exception:
+    except OSError:
         return []
-
-
-def load_config(project_root):
-    try:
-        with open(os.path.join(project_root, '.mega-brain.json')) as f:
-            return json.load(f)
-    except Exception:
-        return {}
 
 
 def main():
     if len(sys.argv) < 2:
         sys.exit(1)
 
-    project_root = sys.argv[1]
+    project_root = os.path.realpath(sys.argv[1])
     cfg = load_config(project_root)
+    scan_root = get_scan_root(project_root, cfg)
     max_concepts = int(cfg.get('maxConcepts', 60))
     priority_types = cfg.get('priorityTypes', [])
     extra_skip = set(cfg.get('exclude', []))
@@ -69,8 +46,7 @@ def main():
     concepts = []
     log_entries = []
 
-    for root, dirs, files in os.walk(project_root):
-        # prune skip dirs in-place
+    for root, dirs, files in os.walk(scan_root):
         dirs[:] = sorted(d for d in dirs if d not in skip and not d.startswith('.cache'))
 
         for fname in sorted(files):
@@ -87,17 +63,18 @@ def main():
                 with open(fpath, encoding='utf-8', errors='replace') as f:
                     content = f.read(4000)
                 fm, fm_end = parse_frontmatter(content)
-                if not fm.get('type') and fname != 'index.md':
+                if not is_okf_concept(fm, fname):
                     continue
                 desc = fm.get('description', '') or body_excerpt(content, fm_end)
+                concept_type = fm.get('type', '')
                 concepts.append({
                     'path': rel,
-                    'type': fm.get('type', ''),
+                    'type': concept_type,
                     'desc': desc[:100],
                     'is_index': fname == 'index.md',
-                    'priority': priority_types.index(fm.get('type', '')) if fm.get('type') in priority_types else 999,
+                    'priority': priority_types.index(concept_type) if concept_type in priority_types else 999,
                 })
-            except Exception:
+            except OSError:
                 pass
 
     concepts.sort(key=lambda c: (0 if c['is_index'] else 1, c['priority'], c['path']))

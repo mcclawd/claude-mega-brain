@@ -1,6 +1,6 @@
 {
   "name": "claude-mega-brain",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "OKF-powered knowledge context for Claude Code — injects your project OKF knowledge base at every session",
   "keywords": ["pi-package", "skills", "okf", "knowledge", "mega-brain"],
   "license": "MIT",

@@ -3,29 +3,19 @@
 PostToolUse(Read) hook — when Claude reads a file with OKF frontmatter,
 inject its linked concepts. Receives tool call JSON via stdin.
 """
-import sys
+import json
 import os
 import re
-import json
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from okf_utils import get_project_root, parse_frontmatter
 
 SILENT = '{"continue": true}'
 
 
-def parse_frontmatter(content):
-    m = re.match(r'^---\s*\n(.*?)\n---', content, re.DOTALL)
-    if not m:
-        return {}
-    fm = {}
-    for line in m.group(1).splitlines():
-        if ':' in line:
-            k, _, v = line.partition(':')
-            fm[k.strip()] = v.strip().strip('"\'')
-    return fm
-
-
 def is_okf_file(content):
-    """File qualifies as OKF if it has type: in frontmatter."""
-    fm = parse_frontmatter(content)
+    fm, _ = parse_frontmatter(content)
     return bool(fm.get('type'))
 
 
@@ -56,7 +46,7 @@ def emit(context):
 def main():
     try:
         payload = json.load(sys.stdin)
-    except Exception:
+    except (json.JSONDecodeError, ValueError):
         print(SILENT)
         return
 
@@ -72,11 +62,10 @@ def main():
     try:
         with open(file_path, encoding='utf-8', errors='replace') as f:
             content = f.read(8000)
-    except Exception:
+    except OSError:
         print(SILENT)
         return
 
-    # Only inject for files that are OKF concepts themselves
     if not is_okf_file(content):
         print(SILENT)
         return
@@ -86,20 +75,20 @@ def main():
         print(SILENT)
         return
 
-    project_root = os.getcwd()
+    project_root = os.path.realpath(get_project_root())
     lines = ["Linked concepts:"]
     for abs_path in linked_paths:
         try:
             with open(abs_path, encoding='utf-8', errors='replace') as f:
                 linked_content = f.read(2000)
-            fm = parse_frontmatter(linked_content)
+            fm, _ = parse_frontmatter(linked_content)
             if not fm.get('type'):
                 continue
             rel = os.path.relpath(abs_path, project_root)
             typ = f" [{fm['type']}]"
             desc = f" — {fm.get('description', '')[:80]}" if fm.get('description') else ''
             lines.append(f"  {rel}{typ}{desc}")
-        except Exception:
+        except OSError:
             pass
 
     if len(lines) <= 1:

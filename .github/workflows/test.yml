@@ -29,6 +29,9 @@ jobs:
           test -x scripts/inject-links.py || (echo "inject-links.py not executable" && exit 1)
           echo "All scripts executable OK"
 
+      - name: Run OKF unit tests
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+
       - name: Smoke test parse-okf.py
         run: |
           TDIR=$(mktemp -d)
@@ -39,8 +42,6 @@ jobs:
 
       - name: Validate benchmark evaluators
         run: |
-          python3 -c "import json; json.load(open('benchmarks/promptfooconfig.yaml'.replace('.yaml','')) if False else open('benchmarks/promptfooconfig.yaml').read() and None) if False else None" 2>/dev/null || true
-          node --input-type=module < benchmarks/evaluators/contains_truth.js 2>/dev/null || \
           node -e "require('./benchmarks/evaluators/contains_truth.js'); console.log('contains_truth OK')"
 
       - name: Validate all skills have SKILL.md
