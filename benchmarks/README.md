@@ -13,7 +13,7 @@ Measures accuracy, tool calls, tokens, and cost across 4 injection strategies.
 
 ## Accuracy Benchmark (promptfoo)
 
-6 questions × 5 repeats, Claude Sonnet 4.6, `temperature=0`.
+10 questions × 3 repeats, Claude Sonnet 4.6, `temperature=0`.
 
 ```bash
 cd benchmarks
@@ -34,7 +34,7 @@ thanks to its compressed structured index vs raw file dump.
 
 ## Agentic Benchmark (real Claude Code sessions)
 
-6 questions × 1 run per condition, measures tool calls, turns, tokens, and latency via `claude -p`.
+10 questions × 1 run per condition, measures tool calls, turns, tokens, and latency via `claude -p`.
 
 ```bash
 cd benchmarks

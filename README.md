@@ -45,7 +45,7 @@ Without claude-mega-brain, Claude guesses from training data:
 User: What column stores the order total?
 
 Claude (no context): Typically total_amount (DECIMAL) or amount (FLOAT)...
-# Wrong — this project uses amount_cents (INT64)
+# Wrong — this project uses total_cents (INT64)
 ```
 
 With claude-mega-brain, the exact schema is injected at `SessionStart`:
@@ -54,15 +54,15 @@ With claude-mega-brain, the exact schema is injected at `SessionStart`:
 <mega-brain>
 Knowledge: 4 documented concepts found in project
 
-  docs/orders.md     [BigQuery Table] — amount_cents INT64, status STRING(pending/confirmed/shipped/done)
-  docs/customers.md  [BigQuery Table] — customer_id STRING, email STRING
+  docs/orders.md     [BigQuery Table] — total_cents INT64, status STRING(pending/confirmed/shipped/done)
+  docs/customers.md  [BigQuery Table] — customer_id STRING, email STRING, country STRING
   docs/wau.md        [Metric]         — COUNT(DISTINCT user_id) WHERE session_date >= CURRENT_DATE-7
-  docs/net_revenue.md [Metric]        — SUM(amount_cents - refund_cents)/100 WHERE status='done'
+  docs/net_revenue.md [Metric]        — SUM(total_cents - refund_cents)/100 WHERE status='done'
 </mega-brain>
 
 User: What column stores the order total?
 
-Claude: amount_cents (INT64) — from docs/orders.md
+Claude: total_cents (INT64) — from docs/orders.md
 # Correct. 0 tool calls. First turn.
 ```
 
@@ -70,7 +70,7 @@ Claude: amount_cents (INT64) — from docs/orders.md
 
 ## Benchmark
 
-6 questions with project-specific values unknowable from training data.
+10 questions with project-specific values unknowable from training data.
 Real agentic sessions — not simulated.
 
 ![Benchmark chart](assets/benchmark.svg)
@@ -118,14 +118,16 @@ No dedicated folder needed — documents can live anywhere in the project. When 
 
 ## How it compares
 
-| tool | auto-inject | schema enforcement | tool calls to answer | accuracy |
-|------|-------------|-------------------|---------------------|---------|
+| tool | auto-inject | schema enforcement | tool calls to answer | accuracy (no tools) |
+|------|-------------|-------------------|---------------------|---------------------|
 | **claude-mega-brain** | ✓ SessionStart hook | required (`type:`) | **0** | **100%** |
-| CLAUDE.md + additionalDirectories | manual setup | none | 0 | 83% |
-| Obsidian + MCP | ✗ manual | none | 4+ | 83% |
+| CLAUDE.md + additionalDirectories | manual setup | none | 0 | 100%* |
+| Obsidian + MCP | ✗ manual | none | 1–3 | 13% |
 | Notion | ✗ manual | proprietary | N/A | — |
 | Logseq | ✗ plugin-based | none | N/A | — |
 | mem.ai | ✗ none | none | N/A | — |
+
+\* CLAUDE.md matches mega-brain accuracy but uses 25% more tokens and is 25% slower — raw file dump vs compressed structured index.
 
 ---
 
@@ -148,7 +150,7 @@ timestamp: 2026-06-29T00:00:00Z
 |-------------|-----------|--------------------------|
 | order_id    | STRING    | Globally unique order ID |
 | customer_id | STRING    | FK → customers           |
-| amount_cents| INT64     | Total in cents           |
+| total_cents | INT64     | Order total in cents     |
 | status      | STRING    | pending/confirmed/shipped/done |
 
 # Joins
