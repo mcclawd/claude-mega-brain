@@ -24,7 +24,7 @@ Real agentic sessions. [Benchmark →](benchmarks/results/agentic-obsidian-vs-me
 
 ```
 /plugin marketplace add guhcostan/claude-mega-brain
-/plugin install mega-brain@mega-brain-local
+/plugin install mega-brain@claude-mega-brain
 ```
 
 Then in any project:
@@ -206,7 +206,7 @@ Document a specific table, metric, API, or service. Saves the file wherever make
 
 ```
 /plugin marketplace add guhcostan/claude-mega-brain
-/plugin install mega-brain@mega-brain-local
+/plugin install mega-brain@claude-mega-brain
 ```
 
 ### Local development
