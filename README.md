@@ -271,6 +271,8 @@ Set `maxConcepts` in `.mega-brain.json`. The index stays compact; `index.md` hol
 
 ---
 
+[![Listed on BundleDex](https://bundledex.net/badge.svg)](https://bundledex.net) — Discovered via [BundleDex](https://bundledex.net), a directory of OKF bundles.
+
 ## License
 
 [MIT](LICENSE) — The shortest license that works.
